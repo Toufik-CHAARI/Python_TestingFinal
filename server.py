@@ -4,12 +4,18 @@ from flask import session
 from datetime import datetime, timedelta
 
 def loadClubs():
+    """
+    Load and return a list of clubs from a JSON file.
+    """
     with open('clubs.json') as c:
          listOfClubs = json.load(c)['clubs']
          return listOfClubs
 
 
 def loadCompetitions():
+    """
+    Load and return a list of competitions from a JSON file.    
+    """
     with open('competitions.json') as comps:
          listOfCompetitions = json.load(comps)['competitions']
          return listOfCompetitions
@@ -83,6 +89,12 @@ def get_club_by_email(club_email):
 
 @app.route('/book/<competition>/<club>')
 def book(competition,club):
+    '''
+    This route displays a booking page for a specific competition and club.
+    It extracts the 'competition' and 'club' parameters from the URL, searches for the corresponding
+    competition and club in the global lists 'competitions' and 'clubs', respectively, and then
+    renders the booking page with their details.    
+    '''
     foundClub = [c for c in clubs if c['name'] == club][0]
     foundCompetition = [c for c in competitions if c['name'] == competition][0]
     if foundClub and foundCompetition:
@@ -94,6 +106,15 @@ def book(competition,club):
 
 @app.route('/purchasePlaces',methods=['POST'])
 def purchasePlaces():
+    '''
+    Process the booking of places for a club in a competition.
+    This route handles the POST request to book a specified number
+    of places in a competition for a club.
+    It validates the requested number of places against the competition's availability, the club's points,
+    and other constraints like booking more than 12 places at a time or booking for past competitions.
+    The function updates the number of places available in the competition and the points of the club 
+    accordingly, if the booking is successful.      
+    '''
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
@@ -130,6 +151,11 @@ def purchasePlaces():
 
 @app.route('/logout')
 def logout():
+    '''
+    Handle the logout process.
+    It handles the redirection of the user to the 'index' page
+    after performing cleanup actions such as clearing session data or cookies.
+    '''
     return redirect(url_for('index'))
 
 

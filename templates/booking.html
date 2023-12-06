@@ -16,7 +16,7 @@
 {% endwith %}
 
     <h2>{{competition['name']}}</h2>
-    Places available: {{competition['numberOfPlaces']}}
+    <strong>  Places available: {{competition['numberOfPlaces']}}</strong>
     <form action="/purchasePlaces" method="post">
         <input type="hidden" name="club" value="{{club['name']}}">
         <input type="hidden" name="competition" value="{{competition['name']}}">
