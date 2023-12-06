@@ -1,6 +1,7 @@
 import json
 from flask import Flask,render_template,request,redirect,flash,url_for
 from flask import session
+from datetime import datetime, timedelta
 
 def loadClubs():
     with open('clubs.json') as c:
@@ -112,6 +113,10 @@ def purchasePlaces():
         flash('Not enough points to book that many places.')
         return redirect(url_for('book', competition=competition['name'], club=club['name']))            
     
+    competition_date = datetime.strptime(competition['date'], "%Y-%m-%d %H:%M:%S")
+    if datetime.now() > competition_date:
+        flash("Cannot book for past competitions.")
+        return redirect(url_for('index', competition=competition['name'], club=club['name']))
     
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
     club['points'] = int(club['points']) - placesRequired
