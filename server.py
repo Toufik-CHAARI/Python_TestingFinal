@@ -41,14 +41,7 @@ def index():
     clubs = loadClubs()    
     return render_template('index.html', clubs=clubs)
 
-def get_club_by_email(club_email):
-    '''
-    Retrieve a club object from a list of clubs based on the provided email address.
-    This function iterates over a global list 'clubs' and returns the first club whose 'email' 
-    attribute matches the provided 'club_email'. 
 
-    '''
-    return next((club for club in clubs if club['email'] == club_email), None)
 
 @app.route('/showSummary', methods=['GET', 'POST'])
 def showSummary():
@@ -78,6 +71,14 @@ def showSummary():
 
     return render_template('welcome.html', club=club, competitions=competitions)
 
+def get_club_by_email(club_email):
+    '''
+    Retrieve a club object from a list of clubs based on the provided email address.
+    This function iterates over a global list 'clubs' and returns the first club whose 'email' 
+    attribute matches the provided 'club_email'. 
+
+    '''
+    return next((club for club in clubs if club['email'] == club_email), None)
 
 @app.route('/book/<competition>/<club>')
 def book(competition,club):
@@ -95,6 +96,13 @@ def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
+    print("Debug - Club Points:", club['points'])  
+    print("Debug - Places Required:", placesRequired)
+    
+    #optionnal code / not identified as an issue
+    if placesRequired > int(competition['numberOfPlaces']):
+            flash('Not enough places available in the competition.')
+            return redirect(url_for('book', competition=competition['name'], club=club['name']))
     
     if placesRequired > 12:
         flash('Cannot book more than 12 places at a time.')
@@ -106,11 +114,13 @@ def purchasePlaces():
     
     
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
+    club['points'] = int(club['points']) - placesRequired
+
     flash('Great-booking complete!')
+    session['club_email'] = club['email']
     return render_template('welcome.html', club=club, competitions=competitions)
 
 
-# TODO: Add route for points display
 
 
 @app.route('/logout')

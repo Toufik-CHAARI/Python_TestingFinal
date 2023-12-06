@@ -28,6 +28,15 @@ def test_successful_booking(client):
     assert response.status_code == 200  
     assert 'Great-booking complete' in response.get_data(as_text=True)
 
+def test_booking_more_than_available(client):
+   
+    response = client.post('/purchasePlaces', data={
+        'competition': 'TEST (<12 & < available)', 
+        'club': 'She Lifts', 
+        'places': '6' 
+    }, follow_redirects=True)
+    assert response.status_code == 200
+    assert 'Not enough places available' in response.get_data(as_text=True)
 
 def test_booking_more_than_club_points(client):
 
