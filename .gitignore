@@ -1,7 +1,4 @@
-bin
-include
-lib
+env/
 .Python
-tests/
 .envrc
 __pycache__
